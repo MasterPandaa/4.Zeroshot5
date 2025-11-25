@@ -1,6 +1,7 @@
-import pygame
 import random
 import sys
+
+import pygame
 
 # ----- Konstanta Game -----
 WIN_COLS = 10
@@ -26,63 +27,64 @@ LIGHT_GRAY = (120, 120, 120)
 
 # Warna untuk setiap bentuk
 COLORS = {
-    'I': (0, 240, 240),     # Cyan
-    'O': (240, 240, 0),     # Yellow
-    'T': (160, 0, 240),     # Purple
-    'S': (0, 240, 0),       # Green
-    'Z': (240, 0, 0),       # Red
-    'J': (0, 0, 240),       # Blue
-    'L': (240, 160, 0),     # Orange
+    "I": (0, 240, 240),  # Cyan
+    "O": (240, 240, 0),  # Yellow
+    "T": (160, 0, 240),  # Purple
+    "S": (0, 240, 0),  # Green
+    "Z": (240, 0, 0),  # Red
+    "J": (0, 0, 240),  # Blue
+    "L": (240, 160, 0),  # Orange
 }
 
 # Definisi bentuk (dalam grid 4x4, tiap rotasi)
 # Menggunakan format list string 4 baris x 4 kolom, '0' = blok, '.' = kosong
 SHAPES = {
-    'S': [
-        ['.0..', '.00.', '..0.', '....'],
-        ['..00', '.00.', '....', '....'],
-        ['.0..', '.00.', '..0.', '....'],
-        ['..00', '.00.', '....', '....'],
+    "S": [
+        [".0..", ".00.", "..0.", "...."],
+        ["..00", ".00.", "....", "...."],
+        [".0..", ".00.", "..0.", "...."],
+        ["..00", ".00.", "....", "...."],
     ],
-    'Z': [
-        ['..0.', '.00.', '.0..', '....'],
-        ['.00.', '..00', '....', '....'],
-        ['..0.', '.00.', '.0..', '....'],
-        ['.00.', '..00', '....', '....'],
+    "Z": [
+        ["..0.", ".00.", ".0..", "...."],
+        [".00.", "..00", "....", "...."],
+        ["..0.", ".00.", ".0..", "...."],
+        [".00.", "..00", "....", "...."],
     ],
-    'I': [
-        ['....', '0000', '....', '....'],
-        ['..0.', '..0.', '..0.', '..0.'],
-        ['....', '0000', '....', '....'],
-        ['..0.', '..0.', '..0.', '..0.'],
+    "I": [
+        ["....", "0000", "....", "...."],
+        ["..0.", "..0.", "..0.", "..0."],
+        ["....", "0000", "....", "...."],
+        ["..0.", "..0.", "..0.", "..0."],
     ],
-    'O': [
-        ['.00.', '.00.', '....', '....'],
-        ['.00.', '.00.', '....', '....'],
-        ['.00.', '.00.', '....', '....'],
-        ['.00.', '.00.', '....', '....'],
+    "O": [
+        [".00.", ".00.", "....", "...."],
+        [".00.", ".00.", "....", "...."],
+        [".00.", ".00.", "....", "...."],
+        [".00.", ".00.", "....", "...."],
     ],
-    'J': [
-        ['0...', '000.', '....', '....'],
-        ['.00.', '.0..', '.0..', '....'],
-        ['....', '000.', '..0.', '....'],
-        ['.0..', '.0..', '00..', '....'],
+    "J": [
+        ["0...", "000.", "....", "...."],
+        [".00.", ".0..", ".0..", "...."],
+        ["....", "000.", "..0.", "...."],
+        [".0..", ".0..", "00..", "...."],
     ],
-    'L': [
-        ['..0.', '000.', '....', '....'],
-        ['.0..', '.0..', '.00.', '....'],
-        ['....', '000.', '0...', '....'],
-        ['00..', '.0..', '.0..', '....'],
+    "L": [
+        ["..0.", "000.", "....", "...."],
+        [".0..", ".0..", ".00.", "...."],
+        ["....", "000.", "0...", "...."],
+        ["00..", ".0..", ".0..", "...."],
     ],
-    'T': [
-        ['.0..', '000.', '....', '....'],
-        ['.0..', '.00.', '.0..', '....'],
-        ['....', '000.', '.0..', '....'],
-        ['.0..', '00..', '.0..', '....'],
+    "T": [
+        [".0..", "000.", "....", "...."],
+        [".0..", ".00.", ".0..", "...."],
+        ["....", "000.", ".0..", "...."],
+        [".0..", "00..", ".0..", "...."],
     ],
 }
 
 PIECES = list(SHAPES.keys())
+
 
 class Piece:
     def __init__(self, x, y, shape_key):
@@ -110,13 +112,15 @@ def convert_shape_format(piece):
     shape_matrix = piece.shape
     for i in range(4):
         for j in range(4):
-            if shape_matrix[i][j] == '0':
+            if shape_matrix[i][j] == "0":
                 positions.append((piece.x + j - 1, piece.y + i - 2))
     return positions
 
 
 def valid_space(piece, grid):
-    accepted_positions = {(j, i) for i in range(WIN_ROWS) for j in range(WIN_COLS) if grid[i][j] == BLACK}
+    accepted_positions = {
+        (j, i) for i in range(WIN_ROWS) for j in range(WIN_COLS) if grid[i][j] == BLACK
+    }
     formatted = convert_shape_format(piece)
     for pos in formatted:
         x, y = pos
@@ -128,7 +132,7 @@ def valid_space(piece, grid):
 
 
 def check_lost(positions):
-    for (_, y) in positions:
+    for _, y in positions:
         if y < 0:
             return True
     return False
@@ -152,7 +156,7 @@ def clear_rows(grid, locked):
                 except KeyError:
                     pass
             # geser turun yg di atasnya
-            for (x, y) in sorted(list(locked.keys()), key=lambda t: t[1]):
+            for x, y in sorted(list(locked.keys()), key=lambda t: t[1]):
                 if y < i:
                     color = locked[(x, y)]
                     del locked[(x, y)]
@@ -164,38 +168,46 @@ def draw_grid_lines(surface):
     # garis vertikal
     for x in range(WIN_COLS + 1):
         pygame.draw.line(
-            surface, LIGHT_GRAY,
+            surface,
+            LIGHT_GRAY,
             (x * BLOCK_SIZE, TOP_MARGIN),
-            (x * BLOCK_SIZE, TOP_MARGIN + PLAY_HEIGHT), 1)
+            (x * BLOCK_SIZE, TOP_MARGIN + PLAY_HEIGHT),
+            1,
+        )
     # garis horizontal
     for y in range(WIN_ROWS + 1):
         pygame.draw.line(
-            surface, LIGHT_GRAY,
+            surface,
+            LIGHT_GRAY,
             (0, TOP_MARGIN + y * BLOCK_SIZE),
-            (PLAY_WIDTH, TOP_MARGIN + y * BLOCK_SIZE), 1)
+            (PLAY_WIDTH, TOP_MARGIN + y * BLOCK_SIZE),
+            1,
+        )
 
 
 def draw_window(surface, grid, score, next_piece):
     surface.fill(GRAY)
 
     # Judul
-    font_title = pygame.font.SysFont('arial', 28, bold=True)
-    label = font_title.render('TETRIS', True, WHITE)
+    font_title = pygame.font.SysFont("arial", 28, bold=True)
+    label = font_title.render("TETRIS", True, WHITE)
     surface.blit(label, (10, 15))
 
     # Skor
-    font_info = pygame.font.SysFont('arial', 20)
-    score_label = font_info.render(f'Score: {score}', True, WHITE)
+    font_info = pygame.font.SysFont("arial", 20)
+    score_label = font_info.render(f"Score: {score}", True, WHITE)
     surface.blit(score_label, (PLAY_WIDTH + 20, TOP_MARGIN))
 
     # Next piece
-    np_label = font_info.render('Next:', True, WHITE)
+    np_label = font_info.render("Next:", True, WHITE)
     surface.blit(np_label, (PLAY_WIDTH + 20, TOP_MARGIN + 40))
 
     # Gambar grid terisi
     for y in range(WIN_ROWS):
         for x in range(WIN_COLS):
-            rect = pygame.Rect(x * BLOCK_SIZE, TOP_MARGIN + y * BLOCK_SIZE, BLOCK_SIZE, BLOCK_SIZE)
+            rect = pygame.Rect(
+                x * BLOCK_SIZE, TOP_MARGIN + y * BLOCK_SIZE, BLOCK_SIZE, BLOCK_SIZE
+            )
             pygame.draw.rect(surface, grid[y][x], rect)
 
     # Grid lines
@@ -216,10 +228,12 @@ def draw_next_piece(surface, next_piece):
     offset_y = TOP_MARGIN + 70
     for i in range(4):
         for j in range(4):
-            if next_piece.shape[i][j] == '0':
+            if next_piece.shape[i][j] == "0":
                 rx = offset_x + (j - 1) * BLOCK_SIZE
                 ry = offset_y + (i - 2) * BLOCK_SIZE
-                pygame.draw.rect(surface, next_piece.color, (rx, ry, BLOCK_SIZE, BLOCK_SIZE))
+                pygame.draw.rect(
+                    surface, next_piece.color, (rx, ry, BLOCK_SIZE, BLOCK_SIZE)
+                )
                 pygame.draw.rect(surface, WHITE, (rx, ry, BLOCK_SIZE, BLOCK_SIZE), 2)
 
 
@@ -253,7 +267,7 @@ def calculate_score(lines):
 def main():
     pygame.init()
     screen = pygame.display.set_mode((WINDOW_WIDTH, WINDOW_HEIGHT))
-    pygame.display.set_caption('Tetris - Python + Pygame')
+    pygame.display.set_caption("Tetris - Python + Pygame")
 
     clock = pygame.time.Clock()
     fall_speed = INITIAL_FALL_SPEED
@@ -269,7 +283,7 @@ def main():
     running = true_game = True
 
     # Teks bantuan
-    font_info = pygame.font.SysFont('arial', 18)
+    font_info = pygame.font.SysFont("arial", 18)
 
     while running:
         dt = clock.tick(60) / 1000.0
@@ -365,12 +379,12 @@ def main():
         draw_window(screen, grid, score, next_piece)
         # Bantuan kontrol
         help_lines = [
-            'Controls:',
-            'Left/Right: Move',
-            'Up: Rotate',
-            'Down: Soft Drop',
-            'SPACE: Hard Drop',
-            'ESC: Quit'
+            "Controls:",
+            "Left/Right: Move",
+            "Up: Rotate",
+            "Down: Soft Drop",
+            "SPACE: Hard Drop",
+            "ESC: Quit",
         ]
         for i, text in enumerate(help_lines):
             lbl = font_info.render(text, True, WHITE)
@@ -388,16 +402,20 @@ def main():
 
 def game_over(surface, score):
     surface.fill(BLACK)
-    font_big = pygame.font.SysFont('arial', 42, bold=True)
-    font_small = pygame.font.SysFont('arial', 24)
+    font_big = pygame.font.SysFont("arial", 42, bold=True)
+    font_small = pygame.font.SysFont("arial", 24)
 
-    over = font_big.render('GAME OVER', True, WHITE)
-    s = font_small.render(f'Final Score: {score}', True, WHITE)
-    info = font_small.render('Press any key to exit...', True, WHITE)
+    over = font_big.render("GAME OVER", True, WHITE)
+    s = font_small.render(f"Final Score: {score}", True, WHITE)
+    info = font_small.render("Press any key to exit...", True, WHITE)
 
-    surface.blit(over, (PLAY_WIDTH // 2 - over.get_width() // 2, WINDOW_HEIGHT // 2 - 80))
+    surface.blit(
+        over, (PLAY_WIDTH // 2 - over.get_width() // 2, WINDOW_HEIGHT // 2 - 80)
+    )
     surface.blit(s, (PLAY_WIDTH // 2 - s.get_width() // 2, WINDOW_HEIGHT // 2 - 30))
-    surface.blit(info, (PLAY_WIDTH // 2 - info.get_width() // 2, WINDOW_HEIGHT // 2 + 10))
+    surface.blit(
+        info, (PLAY_WIDTH // 2 - info.get_width() // 2, WINDOW_HEIGHT // 2 + 10)
+    )
 
     pygame.display.flip()
 
@@ -411,5 +429,5 @@ def game_over(surface, score):
         pygame.time.wait(10)
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()
